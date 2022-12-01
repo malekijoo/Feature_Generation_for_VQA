@@ -1,4 +1,5 @@
 import yaml
+import argparse
 import subprocess
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,9 +37,9 @@ class CoCo:
             print('There was an error downloding the dataset with `tfds`. \n'
                   'The dataset is downloaded from its source')
             subprocess.call('./scripts/get_coco.sh')
-            coco_builder = tfds.builder("coco/2017")
+            coco_builder = tfds.builder("./coco/2017")
             ds_info = coco_builder.info
-            coco_builder.download_and_prepare(data_dir='./coco/')
+            coco_builder.download_and_prepare(download_dir='./coco/')
             datasets = coco_builder.as_dataset(shuffle_files=True, batch_size=self.params.batch)
             ds = datasets[self.task]
             assert isinstance(ds, tf.data.Dataset)
@@ -60,5 +61,11 @@ class CoCo:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data', type=str, default='data/coco.yaml', help='*.data path')
+    parser.add_argument('--task', type=str, default='train', help='train or test')
+    parser.add_argument('--batch', type=int, default=32, help='input batch size')
+    parser.add_argument('--epoch', type=int, default=300, help='input the number of epochs')
+    pr = parser.parse_args()
     coco = CoCo()
     ds_train, ds_info = coco.ds, coco.ds_info
