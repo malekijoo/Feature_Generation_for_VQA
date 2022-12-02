@@ -30,7 +30,7 @@ class CoCo:
         self.params = params
 
         if not os.path.exists(self.ds_path):
-            os.mkdir(self.ds_path, parents=True, exist_ok=True)
+            os.mkdir(self.ds_path)
 
         if 'G' in sh.du('-hs', self.ds_path):
             print('the dataset has already downloaded')
@@ -51,31 +51,31 @@ class CoCo:
 
     def download(self):
 
-        try:
-            print('Downloading the dataset...')
-            ds, ds_inf = tfds.load(name="coco/2017",
-                                   split=self.task,
-                                   data_dir=self.ds_path,
-                                   with_info=True,
-                                   )
-            # train_dataset, test_dataset = datasets["train"], datasets["test"] # if NOT split="train"
-        except:
-            print('There was an error downloding the dataset with `tfds`. \n'
-                  'The dataset is downloaded from its source')
+        # try:
+        #     print('Downloading the dataset...')
+        #     ds, ds_inf = tfds.load(name="coco/2017",
+        #                            split=self.task,
+        #                            data_dir=self.ds_path,
+        #                            with_info=True,
+        #                            )
+        #     # train_dataset, test_dataset = datasets["train"], datasets["test"] # if NOT split="train"
+        # except:
+        print('There was an error downloding the dataset with `tfds`. \n'
+              'The dataset is downloaded from its source')
 
 
-            subprocess.call('./scripts/get_coco.sh')
-            coco_builder = tfds.builder("coco/2017", data_dir=self.ds_path)
-            ds_inf = coco_builder.info
-            coco_builder.download_and_prepare(download_dir=self.ds_path)
-            datasets = coco_builder.as_dataset()
-            ds = datasets[self.task]
-            assert isinstance(ds, tf.data.Dataset)
-            # shuffle_files = True, batch_size = self.params.batch
-            # ds_train = ds_train.repeat().shuffle(1024).batch(128)
-            # ds_train = ds_train.prefetch(2)
-            # features = tf.compat.v1.data.make_one_shot_iterator(train_dataset).get_next()
-            # image, label = features['image'], features['label']
+        subprocess.call('./scripts/get_coco.sh')
+        coco_builder = tfds.builder("coco/2017", data_dir=self.ds_path)
+        ds_inf = coco_builder.info
+        coco_builder.download_and_prepare(download_dir=self.ds_path)
+        datasets = coco_builder.as_dataset()
+        ds = datasets[self.task]
+        assert isinstance(ds, tf.data.Dataset)
+        # shuffle_files = True, batch_size = self.params.batch
+        # ds_train = ds_train.repeat().shuffle(1024).batch(128)
+        # ds_train = ds_train.prefetch(2)
+        # features = tf.compat.v1.data.make_one_shot_iterator(train_dataset).get_next()
+        # image, label = features['image'], features['label']
         return ds, ds_inf
 
     def ds_hyp(self):
