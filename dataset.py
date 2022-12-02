@@ -1,17 +1,20 @@
 import sh
 import yaml
 import argparse
+import functools
 import subprocess
 import numpy as np
 import tensorflow as tf
 from pathlib import Path
 import tensorflow_datasets as tfds
 import matplotlib.pyplot as plt
+from kerod.core.standard_fields import BoxField
+from kerod.dataset.preprocessing import preprocess, expand_dims_for_single_batch
 
 
 class CoCo:
 
-    def __init__(self, params, task='train'):
+    def __init__(self, params, task='train', preprocessing=True):
         """
         dataset = {'images': A tensor of float32 and shape[1, height, widht, 3],
                    'images_info': A tensor of float32 and shape[1, 2],
@@ -45,8 +48,10 @@ class CoCo:
         except:
             print('There was an error downloding the dataset with `tfds`. \n'
                   'The dataset is downloaded from its source')
+
             if 'G' not in sh.du('-hs', Path('./coco')):
                 subprocess.call('./scripts/get_coco.sh')
+
             coco_builder = tfds.builder("coco/2017", data_dir='./coco/')
             ds_inf = coco_builder.info
             coco_builder.download_and_prepare(download_dir='./coco/')
@@ -58,9 +63,16 @@ class CoCo:
             # features = tf.compat.v1.data.make_one_shot_iterator(train_dataset).get_next()
             # image, label = features['image'], features['label']
 
+
+        if preprocessing:
+            ds = ds.map(functools.partial(preprocess, bgr=True),
+                        num_parallel_calls=tf.data.experimental.AUTOTUNE)
+
         self.ds = ds
         self.ds_info = ds_inf
         self.hyp = self.ds_hyp()
+        self.hyp['names_no'] = [str(i) for i in range(self.hyp['nc'])]
+
 
     def ds_hyp(self):
 
