@@ -4,17 +4,26 @@ import pandas
 import argparse
 
 import numpy as np
-import dataset as dt
+from dataset import CoCo
 import tensorflow as tf
 
 
 def train(params):
 
-    coco = dt.CoCo(params)
+    coco = CoCo(params)
+    ds_train, ds_info = coco.ds, coco.ds_info
+    coco_hyp = coco.hyp
+    print('coco ', coco)
+    print(type(ds_train), ds_train)
+    print(type(ds_info), ds_info)
+    print(coco_hyp['names_no'])
+    print('coco hype ', coco_hyp)
+
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='data/coco.yaml', help='*.data path')
     parser.add_argument('--task', type=str, default='train', help='train or test')
