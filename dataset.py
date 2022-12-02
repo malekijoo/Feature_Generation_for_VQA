@@ -25,23 +25,30 @@ class CoCo:
         self.params = params
 
         try:
-            print('Downloading the dataset...')
-            ds, ds_info = tfds.load(name="coco/2017",
-                                    split=self.task,
-                                    data_dir='./coco',
-                                    shuffle_files=True,
-                                    batch_size=self.params.batch,
-                                    with_info=True,
-                                    )
-            # train_dataset, test_dataset = datasets["train"], datasets["test"] # if NOT split="train"
-
+            if 'G' not in sh.du('-hs', Path('./coco')):
+                print('Downloading the dataset...')
+                ds, ds_inf = tfds.load(name="coco/2017",
+                                       split=self.task,
+                                       data_dir='./coco',
+                                       shuffle_files=True,
+                                       batch_size=self.params.batch,
+                                       with_info=True,
+                                       )
+                # train_dataset, test_dataset = datasets["train"], datasets["test"] # if NOT split="train"
+            else:
+                coco_builder = tfds.builder("coco/2017", data_dir='./coco/')
+                ds_inf = coco_builder.info
+                coco_builder.download_and_prepare(download_dir='./coco/')
+                datasets = coco_builder.as_dataset(shuffle_files=True, batch_size=self.params.batch)
+                ds = datasets[self.task]
+                assert isinstance(ds, tf.data.Dataset)
         except:
             print('There was an error downloding the dataset with `tfds`. \n'
                   'The dataset is downloaded from its source')
             if 'G' not in sh.du('-hs', Path('./coco')):
                 subprocess.call('./scripts/get_coco.sh')
             coco_builder = tfds.builder("coco/2017", data_dir='./coco/')
-            ds_info = coco_builder.info
+            ds_inf = coco_builder.info
             coco_builder.download_and_prepare(download_dir='./coco/')
             datasets = coco_builder.as_dataset(shuffle_files=True, batch_size=self.params.batch)
             ds = datasets[self.task]
@@ -52,7 +59,7 @@ class CoCo:
             # image, label = features['image'], features['label']
 
         self.ds = ds
-        self.ds_info = ds_info
+        self.ds_info = ds_inf
         self.hyp = self.ds_hyp()
 
     def ds_hyp(self):
@@ -64,6 +71,7 @@ class CoCo:
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='data/coco.yaml', help='*.data path')
     parser.add_argument('--task', type=str, default='train', help='train or test')
@@ -73,3 +81,4 @@ if __name__ == '__main__':
 
     coco = CoCo(pr)
     ds_train, ds_info = coco.ds, coco.ds_info
+    coco_hyp = coco.hyp
