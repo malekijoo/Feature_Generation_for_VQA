@@ -1,10 +1,12 @@
+import sh
 import yaml
 import argparse
 import subprocess
-import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+from pathlib import Path
 import tensorflow_datasets as tfds
+import matplotlib.pyplot as plt
 
 
 class CoCo:
@@ -36,8 +38,9 @@ class CoCo:
         except:
             print('There was an error downloding the dataset with `tfds`. \n'
                   'The dataset is downloaded from its source')
-            subprocess.call('./scripts/get_coco.sh')
-            coco_builder = tfds.builder("./coco/2017")
+            if 'G' not in sh.du('-hs', Path('./coco')):
+                subprocess.call('./scripts/get_coco.sh')
+            coco_builder = tfds.builder("coco/2017", data_dir='./coco/')
             ds_info = coco_builder.info
             coco_builder.download_and_prepare(download_dir='./coco/')
             datasets = coco_builder.as_dataset(shuffle_files=True, batch_size=self.params.batch)
@@ -67,5 +70,6 @@ if __name__ == '__main__':
     parser.add_argument('--batch', type=int, default=32, help='input batch size')
     parser.add_argument('--epoch', type=int, default=300, help='input the number of epochs')
     pr = parser.parse_args()
-    coco = CoCo()
+
+    coco = CoCo(pr)
     ds_train, ds_info = coco.ds, coco.ds_info
