@@ -1,3 +1,4 @@
+import os
 import sh
 import yaml
 import argparse
@@ -24,55 +25,58 @@ class CoCo:
                    'weights': A tensor of float32 and shape[1, num_boxes]
                     }
         """
+        self.ds_path = Path('./coco')
         self.task = task
         self.params = params
 
+        if not os.path.exists(self.ds_path):
+            os.mkdir(self.ds_path, parents=True, exist_ok=True)
+
+        if 'G' in sh.du('-hs', self.ds_path):
+            print('the dataset has already downloaded')
+            coco_builder = tfds.builder("coco/2017", data_dir=self.ds_path)
+            self.ds_info = coco_builder.info
+            datasets = coco_builder.as_dataset()
+            self.ds = datasets[self.task]
+
+        else:
+            self.ds, self.ds_info = self.download()
+
+
+        if preprocessing:
+            self.ds = self.ds.map(functools.partial(preprocess, bgr=True),
+                                  num_parallel_calls=tf.data.experimental.AUTOTUNE)
+            self.hyp = self.ds_hyp()
+            self.hyp['names_no'] = [str(i) for i in range(self.hyp['nc'])]
+
+    def download(self):
+
         try:
-            if 'G' not in sh.du('-hs', Path('./coco')):
-                print('Downloading the dataset...')
-                ds, ds_inf = tfds.load(name="coco/2017",
-                                       split=self.task,
-                                       data_dir='./coco',
-                                       shuffle_files=True,
-                                       batch_size=self.params.batch,
-                                       with_info=True,
-                                       )
-                # train_dataset, test_dataset = datasets["train"], datasets["test"] # if NOT split="train"
-            else:
-                coco_builder = tfds.builder("coco/2017", data_dir='./coco/')
-                ds_inf = coco_builder.info
-                coco_builder.download_and_prepare(download_dir='./coco/')
-                datasets = coco_builder.as_dataset(shuffle_files=True, batch_size=self.params.batch)
-                ds = datasets[self.task]
-                assert isinstance(ds, tf.data.Dataset)
+            print('Downloading the dataset...')
+            ds, ds_inf = tfds.load(name="coco/2017",
+                                   split=self.task,
+                                   data_dir=self.ds_path,
+                                   with_info=True,
+                                   )
+            # train_dataset, test_dataset = datasets["train"], datasets["test"] # if NOT split="train"
         except:
             print('There was an error downloding the dataset with `tfds`. \n'
                   'The dataset is downloaded from its source')
 
-            if 'G' not in sh.du('-hs', Path('./coco')):
-                subprocess.call('./scripts/get_coco.sh')
 
-            coco_builder = tfds.builder("coco/2017", data_dir='./coco/')
+            subprocess.call('./scripts/get_coco.sh')
+            coco_builder = tfds.builder("coco/2017", data_dir=self.ds_path)
             ds_inf = coco_builder.info
-            coco_builder.download_and_prepare(download_dir='./coco/')
-            datasets = coco_builder.as_dataset(shuffle_files=True, batch_size=self.params.batch)
+            coco_builder.download_and_prepare(download_dir=self.ds_path)
+            datasets = coco_builder.as_dataset()
             ds = datasets[self.task]
             assert isinstance(ds, tf.data.Dataset)
+            # shuffle_files = True, batch_size = self.params.batch
             # ds_train = ds_train.repeat().shuffle(1024).batch(128)
             # ds_train = ds_train.prefetch(2)
             # features = tf.compat.v1.data.make_one_shot_iterator(train_dataset).get_next()
             # image, label = features['image'], features['label']
-
-
-        if preprocessing:
-            ds = ds.map(functools.partial(preprocess, bgr=True),
-                        num_parallel_calls=tf.data.experimental.AUTOTUNE)
-
-        self.ds = ds
-        self.ds_info = ds_inf
-        self.hyp = self.ds_hyp()
-        self.hyp['names_no'] = [str(i) for i in range(self.hyp['nc'])]
-
+        return ds, ds_inf
 
     def ds_hyp(self):
 
@@ -83,7 +87,6 @@ class CoCo:
 
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='data/coco.yaml', help='*.data path')
     parser.add_argument('--task', type=str, default='train', help='train or test')
