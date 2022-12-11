@@ -15,7 +15,7 @@ from kerod.dataset.preprocessing import preprocess, expand_dims_for_single_batch
 
 class CoCo:
 
-    def __init__(self, params, task='train', preprocessing=True):
+    def __init__(self, cfgs):
         """
         dataset = {'images': A tensor of float32 and shape[1, height, widht, 3],
                    'images_info': A tensor of float32 and shape[1, 2],
@@ -25,25 +25,14 @@ class CoCo:
                    'weights': A tensor of float32 and shape[1, num_boxes]
                     }
         """
-        self.ds_path = Path('./coco')
-        self.task = task
-        self.params = params
+        self.ds_path = cfgs.ds_dir
 
         if not os.path.exists(self.ds_path):
             os.mkdir(self.ds_path)
-
-        # if 'G' in sh.du('-hs', self.ds_path):
-        #     print('the dataset has already downloaded')
-        #     coco_builder = tfds.builder("coco/2017", data_dir=self.ds_path)
-        #     self.ds_info = coco_builder.info
-        #     datasets = coco_builder.as_dataset()
-        #     self.ds = datasets[self.task]
-        #
-        # else:
         self.ds, self.ds_info = self.download()
 
 
-        if preprocessing:
+        if cfg.p:
             self.ds = self.ds.map(functools.partial(preprocess, bgr=True),
                                   num_parallel_calls=tf.data.experimental.AUTOTUNE)
             self.hyp = self.ds_hyp()
@@ -58,6 +47,8 @@ class CoCo:
                                data_dir=self.ds_path,
                                with_info=True,
                                )
+        assert isinstance(ds, tf.data.Dataset)
+        return ds, ds_inf
         #     # train_dataset, test_dataset = datasets["train"], datasets["test"] # if NOT split="train"
         # except:
         # print('There was an error downloding the dataset with `tfds`. \n'
@@ -70,29 +61,24 @@ class CoCo:
         # coco_builder.download_and_prepare(download_dir=self.ds_path)
         # datasets = coco_builder.as_dataset()
         # ds = datasets[self.task]
-        assert isinstance(ds, tf.data.Dataset)
         # shuffle_files = True, batch_size = self.params.batch
         # ds_train = ds_train.repeat().shuffle(1024).batch(128)
         # ds_train = ds_train.prefetch(2)
         # features = tf.compat.v1.data.make_one_shot_iterator(train_dataset).get_next()
         # image, label = features['image'], features['label']
-        return ds, ds_inf
 
-    def ds_hyp(self):
 
-        with open(self.params.data) as f:
-            ds_hyp = yaml.load(f, Loader=yaml.SafeLoader)
 
-        return ds_hyp
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='data/coco.yaml', help='*.data path')
-    parser.add_argument('--task', type=str, default='train', help='train or test')
-    parser.add_argument('--batch', type=int, default=32, help='input batch size')
-    parser.add_argument('--epoch', type=int, default=300, help='input the number of epochs')
+    parser.add_argument('-i', '--info', type=str, default='./data/coco.yaml', help='Information ')
+    parser.add_argument('-t', '--task', type=str, default='train', help='train or test')
+    parser.add_argument('-b', '--batch', type=int, default=32, help='input batch size')
+    parser.add_argument('-e', '--epoch', type=int, default=300, help='input the number of epochs')
+    parser.add_argument('-p', '--preprocessing', type=bool, default=True, action=argparse.BooleanOptionalAction)
     pr = parser.parse_args()
 
     coco = CoCo(pr)
