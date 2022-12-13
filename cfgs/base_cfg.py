@@ -11,20 +11,21 @@ import numpy as np
 class Cfgs(PathCfg):
 
     def __init__(self, parser_args, mode='base'):
-        super(Cfgs, self).__init__()
 
-        self.info = self.ds_info(parser_args)
-        self.mode = mode
-        self.parser_args = Cfgs.parse_to_dict(parser_args)
+        super(Cfgs, self).__init__(parser_args.exp_dir)
         self.SEED = random.randint(0, 99999999)
+        self.info = Cfgs.yaml_reader(parser_args.info)
+        self.parser_args = Cfgs.parse_to_dict(parser_args)
+        print(self.parser_args)
+        self.mode = mode
         self.epoch = parser_args.epoch
         self.batch_size = parser_args.batch
         self.preprocessing = parser_args.preprocessing
         self.task = parser_args.task
+        self.yolo_pred_filename = 'predictions.csv'
 
-        # Result Directories
-
-    def parse_to_dict(self, args):
+    @staticmethod
+    def parse_to_dict(args):
       args_dict = {}
       for arg in dir(args):
         if not arg.startswith('_'): # and not isinstance(getattr(args, arg), MethodType):
@@ -33,7 +34,7 @@ class Cfgs(PathCfg):
 
       return args_dict
     @staticmethod
-    def ds_info(path):
+    def yaml_reader(path):
       with open(path) as f:
         _yaml = yaml.load(f, Loader=yaml.SafeLoader)
       return _yaml
@@ -47,8 +48,9 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--batch', type=int, default=32, help='input batch size')
     parser.add_argument('-e', '--epoch', type=int, default=300, help='input the number of epochs')
     parser.add_argument('-p', '--preprocessing', type=bool, default=True, action=argparse.BooleanOptionalAction)
+    parser.add_argument('--exp-dir', type=str, default='run', help='directory of result')
     pr = parser.parse_args()
 
     a = Cfgs(pr)
-    print(a.__dict__)
+    # print(a.__dict__)
 

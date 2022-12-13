@@ -7,14 +7,14 @@ from pathlib import Path
 
 class PathCfg:
 
-    def __init__(self, filename=None):
+    def __init__(self, dirname=None):
 
         self.root_path = './'
         self.yolo_path = './yolov7'
         self.cfgs_path = './cfgs'
         self.result_dir = './exp'
         self.coco_path = './coco'
-        self.test_dir = (filename if filename else 'test_run')
+        self.exp_dir = (dirname if dirname else 'run')
 
 
         if not os.path.isdir('./coco'):
@@ -28,7 +28,7 @@ class PathCfg:
         else:
             self.gd_status = False
 
-        self.save_path = Path(self.path_maker(self.result_dir + '/' + self.test_dir, exist_ok=True)).resolve() # increment run
+        self.save_path = Path(self.path_maker(self.result_dir + '/' + self.exp_dir, exist_ok=True)).resolve() # increment run
         self.save_path.mkdir(parents=True, exist_ok=True)  # make dir
 
 
