@@ -2,16 +2,22 @@
 import yaml
 import pandas
 import argparse
-from cfgs import path_cfg as pcfg
+from cfgs.base_cfg import Cfgs
 
 import numpy as np
 from dataset import CoCo
 from cfgs.base_cfg import Cfgs
+from yolo import YoloPred
 import tensorflow as tf
 
 
 def train(params):
-    a = pcfg.PathCfg()
+    cfgs = Cfgs(pr)
+    print(cfgs)
+    yolo = YoloPred(cfgs)
+    a = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
+    print(a)
+    print(a.shape)
     # cfgs = Cfgs(params)
     # print(cfgs.gdrive)
     # coco = CoCo(params)
@@ -34,6 +40,8 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--batch', type=int, default=32, help='input batch size')
     parser.add_argument('-e', '--epoch', type=int, default=300, help='input the number of epochs')
     parser.add_argument('-p', '--preprocessing', type=bool, default=True, action=argparse.BooleanOptionalAction)
+    parser.add_argument('--exp-dir', type=str, default='run', help='directory of result')
+
     pr = parser.parse_args()
     train(pr)
 #     df1 = pd.read_hdf(Path(save_path.resolve(), 'hdf5_predictions.h5'))

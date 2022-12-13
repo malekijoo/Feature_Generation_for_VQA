@@ -25,14 +25,14 @@ class CoCo:
                    'weights': A tensor of float32 and shape[1, num_boxes]
                     }
         """
-        self.ds_path = cfgs.ds_dir
+        self.ds_path = cfgs.coco_path
 
         if not os.path.exists(self.ds_path):
             os.mkdir(self.ds_path)
         self.ds, self.ds_info = self.download()
 
 
-        if cfg.p:
+        if cfgs.preprocessing:
             self.ds = self.ds.map(functools.partial(preprocess, bgr=True),
                                   num_parallel_calls=tf.data.experimental.AUTOTUNE)
             self.hyp = self.ds_hyp()
@@ -79,6 +79,7 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--batch', type=int, default=32, help='input batch size')
     parser.add_argument('-e', '--epoch', type=int, default=300, help='input the number of epochs')
     parser.add_argument('-p', '--preprocessing', type=bool, default=True, action=argparse.BooleanOptionalAction)
+    parser.add_argument('--exp-dir', type=str, default='run', help='directory of result')
     pr = parser.parse_args()
 
     coco = CoCo(pr)
