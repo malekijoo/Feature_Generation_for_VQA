@@ -5,6 +5,7 @@ import argparse
 import functools
 import subprocess
 import numpy as np
+from cfgs.base_cfg import Cfgs
 import tensorflow as tf
 from pathlib import Path
 import tensorflow_datasets as tfds
@@ -25,23 +26,29 @@ class CoCo:
                    'weights': A tensor of float32 and shape[1, num_boxes]
                     }
         """
-        self.ds_path = cfgs.coco_path
+        self.path = cfgs.coco_path
+        print(self.path)
+        if not os.path.exists(self.path):
+            os.mkdir(self.path)
 
-        if not os.path.exists(self.ds_path):
-            os.mkdir(self.ds_path)
-        self.ds, self.ds_info = self.download()
+        self.task = cfgs.task
+        # self.ds, self.ds_info = self.download()
 
 
         if cfgs.preprocessing:
             self.ds = self.ds.map(functools.partial(preprocess, bgr=True),
                                   num_parallel_calls=tf.data.experimental.AUTOTUNE)
-            self.hyp = self.ds_hyp()
+            self.hyp = cfgs.hyp
             self.hyp['names_no'] = [str(i) for i in range(self.hyp['nc'])]
 
-    def download(self):
+        # size = (200, 200)
+        # ds = ds.map(lambda img: smart_resize(img, size))
+    @classmethod
+    def download(cls, cfgs):
 
         # try:
-        print('Downloading the dataset...')
+        self = cls(cfgs)
+        print(f'Downloading the {self.task} dataset...')
         ds, ds_inf = tfds.load(name="coco/2017",
                                split=self.task,
                                data_dir=self.ds_path,
@@ -49,23 +56,7 @@ class CoCo:
                                )
         assert isinstance(ds, tf.data.Dataset)
         return ds, ds_inf
-        #     # train_dataset, test_dataset = datasets["train"], datasets["test"] # if NOT split="train"
-        # except:
-        # print('There was an error downloding the dataset with `tfds`. \n'
-        #       'The dataset is downloaded from its source')
-        #
-        #
-        # subprocess.call('./scripts/get_coco.sh')
-        # coco_builder = tfds.builder("coco/2017", data_dir=self.ds_path)
-        # ds_inf = coco_builder.info
-        # coco_builder.download_and_prepare(download_dir=self.ds_path)
-        # datasets = coco_builder.as_dataset()
-        # ds = datasets[self.task]
-        # shuffle_files = True, batch_size = self.params.batch
-        # ds_train = ds_train.repeat().shuffle(1024).batch(128)
-        # ds_train = ds_train.prefetch(2)
-        # features = tf.compat.v1.data.make_one_shot_iterator(train_dataset).get_next()
-        # image, label = features['image'], features['label']
+
 
 
 
@@ -74,7 +65,8 @@ class CoCo:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--info', type=str, default='./data/coco.yaml', help='Information ')
+    parser.add_argument('--yaml', type=str, default='./data/coco.yaml', help='hyper parameter of dataset ')
+    parser.add_argument('-i', '--info', type=str, default='', help='information of  ')
     parser.add_argument('-t', '--task', type=str, default='train', help='train or test')
     parser.add_argument('-b', '--batch', type=int, default=32, help='input batch size')
     parser.add_argument('-e', '--epoch', type=int, default=300, help='input the number of epochs')
@@ -82,6 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('--exp-dir', type=str, default='run', help='directory of result')
     pr = parser.parse_args()
 
-    coco = CoCo(pr)
-    ds_train, ds_info = coco.ds, coco.ds_info
-    coco_hyp = coco.hyp
+    cfgs = Cfgs(pr)
+    coco = CoCo(cfgs=cfgs)
+    # ds_train, ds_info = coco.ds, coco.ds_info
+    # coco_hyp = coco.hyp

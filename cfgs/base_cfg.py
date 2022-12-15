@@ -13,10 +13,10 @@ class Cfgs(PathCfg):
     def __init__(self, parser_args, mode='base'):
 
         super(Cfgs, self).__init__(parser_args.exp_dir)
+
         self.SEED = random.randint(0, 99999999)
-        self.info = Cfgs.yaml_reader(parser_args.info)
+        self.hyp = Cfgs.yaml_reader(parser_args.yaml)
         self.parser_args = Cfgs.parse_to_dict(parser_args)
-        print(self.parser_args)
         self.mode = mode
         self.epoch = parser_args.epoch
         self.batch_size = parser_args.batch
@@ -43,7 +43,8 @@ class Cfgs(PathCfg):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--info', type=str, default='../data/coco.yaml', help='Information ')
+    parser.add_argument('--yaml', type=str, default='../data/coco.yaml', help='hyper parameter of dataset ')
+    parser.add_argument('-i', '--info', type=str, default='', help='information of  ')
     parser.add_argument('-t', '--task', type=str, default='train', help='train or test')
     parser.add_argument('-b', '--batch', type=int, default=32, help='input batch size')
     parser.add_argument('-e', '--epoch', type=int, default=300, help='input the number of epochs')
