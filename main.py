@@ -5,6 +5,7 @@ import argparse
 from cfgs.base_cfg import Cfgs
 
 import numpy as np
+from model import FExt_Model
 from dataset import CoCo
 from cfgs.base_cfg import Cfgs
 from yolo import YoloPred
@@ -18,6 +19,20 @@ def train(params):
     a = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
     print(a)
     print(a.shape)
+    cfgs = Cfgs(pr)
+    coco = CoCo(cfgs=cfgs)
+    # {'images', 'images_info', 'bbox', 'labels', 'num_boxes', 'weights'}
+    ds_train, ds_info = coco.ds, coco.ds_info
+
+
+    model = FExt_Model()
+    for tr in ds_train:
+        print(list(tr.keys()))
+        print(tr['images_info'])
+        img = tr['image']
+        tr['image/filename']
+        output = model(img)
+
 
     # img_path = 'elephant.jpg'
     # img = image.load_img(img_path, target_size=(224, 224))

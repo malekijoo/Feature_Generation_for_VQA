@@ -16,6 +16,8 @@ class Cfgs(PathCfg):
 
         self.SEED = random.randint(0, 99999999)
         self.hyp = Cfgs.yaml_reader(parser_args.yaml)
+        self.hyp['cls_no'] = [str(i) for i in range(self.hyp['nc'])]
+
         self.parser_args = Cfgs.parse_to_dict(parser_args)
         self.mode = mode
         self.epoch = parser_args.epoch
@@ -23,6 +25,7 @@ class Cfgs(PathCfg):
         self.preprocessing = parser_args.preprocessing
         self.task = parser_args.task
         self.yolo_pred_filename = 'predictions.csv'
+
 
     @staticmethod
     def parse_to_dict(args):
