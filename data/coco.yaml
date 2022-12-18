@@ -24,3 +24,10 @@ names: [ 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', '
 
 gdrive_status: True
 gdrive: /content/gdrive/MyDrive/exp
+
+# 19G, 118k images
+f1: train2017.zip
+# 1G, 5k images
+f2: val2017.zip
+# 7G, 41k images (optional)
+f3: test2017.zip
