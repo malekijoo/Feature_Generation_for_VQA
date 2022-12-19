@@ -22,8 +22,8 @@ def train(params):
     cfgs = Cfgs(pr)
     coco = CoCo(cfgs=cfgs)
     # {'images', 'images_info', 'bbox', 'labels', 'num_boxes', 'weights'}
-    ds_train, ds_info = coco.ds, coco.ds_info
-
+    dataloader = coco.create_dataloader(data[task], imgsz, batch_size, gs, opt, pad=0.5, rect=True,
+                                   prefix=colorstr(f'{task}: '))[0]
 
     model = FExt_Model()
     for tr in ds_train:
