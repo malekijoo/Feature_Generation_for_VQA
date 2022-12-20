@@ -34,7 +34,13 @@ def train(params):
             print(type(paths), paths)
             print(shapes)
             tg, df = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
-            # coco.bb_crop_image
+            # coco.bb_crop_image(im, tg)
+            # xx = tf.data.frosilice().batch(32)
+            # output = model(xx)
+            # output + path will be save like mcan-vqa
+
+
+
     # img_path = 'elephant.jpg'
     # img = image.load_img(img_path, target_size=(224, 224))
     # x = image.img_to_array(img)
@@ -63,7 +69,7 @@ if __name__ == '__main__':
     parser.add_argument('--yaml', type=str, default='./data/coco.yaml', help='hyper parameter of dataset ')
     parser.add_argument('-i', '--info', type=str, default='', help='information of  ')
     parser.add_argument('-t', '--task', type=str, default='train', help='train or test')
-    parser.add_argument('-b', '--batch', type=int, default=1, help='input batch size')
+    parser.add_argument('-b', '--batch', type=int, default=32, help='input batch size')
     parser.add_argument('-e', '--epoch', type=int, default=300, help='input the number of epochs')
     parser.add_argument('-p', '--preprocessing', type=bool, default=True, action=argparse.BooleanOptionalAction)
     parser.add_argument('--exp-dir', type=str, default='run', help='directory of result')
