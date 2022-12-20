@@ -25,7 +25,7 @@ class Cfgs(PathCfg):
         self.preprocessing = parser_args.preprocessing
         self.task = parser_args.task
         self.yolo_pred_filename = 'predictions.csv'
-        self.imgsize = (640, 640)
+        self.imgsize = 640
 
     @staticmethod
     def parse_to_dict(args):
