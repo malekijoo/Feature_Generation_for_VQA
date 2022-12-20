@@ -190,6 +190,26 @@ def resample_segments(segments, n=1000):
         segments[i] = np.concatenate([np.interp(x, xp, s[:, i]) for i in range(2)]).reshape(2, -1).T  # segment xy
     return segments
 
+def check_dataset(hyp):
+    # Download dataset if not found locally
+    val, s = dict.get('val'), dict.get('download')
+    if val and len(val):
+        val = [Path(x).resolve() for x in (val if isinstance(val, list) else [val])]  # val path
+        if not all(x.exists() for x in val):
+            print('\nWARNING: Dataset not found, nonexistent paths: %s' % [str(x) for x in val if not x.exists()])
+            if s and len(s):  # download script
+                print('Downloading %s ...' % s)
+                if s.startswith('http') and s.endswith('.zip'):  # URL
+                    f = Path(s).name  # filename
+                    torch.hub.download_url_to_file(s, f)
+                    r = os.system('unzip -q %s -d ../ && rm %s' % (f, f))  # unzip
+                else:  # bash script
+                    r = os.system(s)
+                print('Dataset autodownload %s\n' % ('success' if r == 0 else 'failure'))  # analyze return value
+            else:
+                raise Exception('Dataset not found.')
+
+
 
 def clean_str(s):
     # Cleans a string by replacing special characters with underscore _

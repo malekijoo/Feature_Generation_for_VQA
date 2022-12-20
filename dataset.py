@@ -26,6 +26,7 @@ from copy import deepcopy
 #from pycocotools import mask as maskUtils
 from torchvision.utils import save_image
 from torchvision.ops import roi_pool, roi_align, ps_roi_pool, ps_roi_align
+from utils import check_dataset
 from utils import torch_distributed_zero_first
 from utils import xyxy2xywh, xywh2xyxy, xywhn2xyxy, xyn2xy, segment2box, segments2boxes
 from utils import check_requirements, resample_segments, clean_str, colorstr
@@ -71,6 +72,8 @@ class CoCo:
         # self.ds, self.ds_info = self._download()
         self._stride = 32
         self._single_cls = True
+        check_dataset(cfgs.hyp)
+
         self.dataloader = create_dataloader(cfgs.hyp[self.task], self.size, self.batch_size,
                                             self._stride, self._single_cls,
                                             pad=0.5, rect=True,
