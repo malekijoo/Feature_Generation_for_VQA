@@ -17,7 +17,7 @@ class YoloPred:
     @property
     def pred_df(self):
 
-        _pred_df = pd.read_csv(self.yolo_path + '/' + self.pred_name, index_col=[0])
+        _pred_df = pd.read_csv(self.yolo_path + '/' + self.pred_name) # , index_col=[0])
         _pred_df.columns = ['x1', 'y1', 'x2', 'y2', 'conf', 'cls', 'path']
         _pred_df = _pred_df.drop_duplicates()
 
@@ -90,8 +90,8 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--preprocessing', type=bool, default=True, action=argparse.BooleanOptionalAction)
     parser.add_argument('--exp-dir', type=str, default='run', help='directory of result')
 
-    pr = parser.parse_args()
-    cfgs = Cfgs(pr)
+    params = parser.parse_args()
+    cfgs = Cfgs(params)
 
     yolo = YoloPred(cfgs)
     print(yolo.pred_df.head())
