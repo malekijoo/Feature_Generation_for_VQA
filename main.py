@@ -13,6 +13,7 @@ import tensorflow as tf
 
 
 def train(params):
+
     cfgs = Cfgs(params)
     print(cfgs)
     yolo = YoloPred(cfgs)

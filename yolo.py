@@ -66,7 +66,7 @@ class YoloPred:
         if conf_tr > 0:
             print(f'Confidence threshold is tr={conf_tr}. It means the BBox lower than the tr will be filtered')
             dummy_df = dummy_df[dummy_df['conf'] >= conf_tr]
-            tg = dummy_df[['x1', 'y1', 'x2', 'y2']].values.to_list()
+            tg = dummy_df[['x1', 'y1', 'x2', 'y2']].values.tolist()
         return tg, dummy_df
 
 
