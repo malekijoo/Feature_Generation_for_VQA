@@ -17,9 +17,7 @@ def train(params):
     cfgs = Cfgs(params)
     print(cfgs)
     yolo = YoloPred(cfgs)
-    a = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
-    print(a)
-    print(a.shape)
+    tg, df = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
     coco = CoCo(cfgs=cfgs)
     # {'images', 'images_info', 'bbox', 'labels', 'num_boxes', 'weights'}
     dataloader = coco.dataloader
@@ -35,8 +33,8 @@ def train(params):
             print(type(targets), targets.shape)
             print(type(paths), paths)
             print(shapes)
-            a = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
-            coco.bb_crop_image
+            tg, df = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
+            # coco.bb_crop_image
     # img_path = 'elephant.jpg'
     # img = image.load_img(img_path, target_size=(224, 224))
     # x = image.img_to_array(img)
