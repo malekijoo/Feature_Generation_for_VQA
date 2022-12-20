@@ -3,7 +3,7 @@ import yaml
 import pandas
 import argparse
 from cfgs.base_cfg import Cfgs
-
+import tqdm
 import numpy as np
 from model import FExt_Model
 from dataset import CoCo
@@ -22,18 +22,19 @@ def train(params):
     cfgs = Cfgs(pr)
     coco = CoCo(cfgs=cfgs)
     # {'images', 'images_info', 'bbox', 'labels', 'num_boxes', 'weights'}
-    dataloader = coco.create_dataloader(data[task], imgsz, batch_size, gs, opt, pad=0.5, rect=True,
-                                   prefix=colorstr(f'{task}: '))[0]
-
+    dataloader = coco.dataloader
     model = FExt_Model()
-    for tr in ds_train:
-        print(list(tr.keys()))
-        print(tr['images_info'])
-        img = tr['image']
-        tr['image/filename']
-        output = model(img)
 
 
+    for batch_i, (img, targets, paths, shapes) in enumerate(tqdm(dataloader, desc=s)):
+        if batch_i == 1:
+            img /= 255.0  # 0 - 255 to 0.0 - 1.0
+            nb, _, height, width = img.shape
+
+            print(type(img), img.shape)
+            print(type(targets), targets.shape)
+            print(type(paths), paths)
+            print(shapes)
     # img_path = 'elephant.jpg'
     # img = image.load_img(img_path, target_size=(224, 224))
     # x = image.img_to_array(img)
@@ -62,13 +63,13 @@ if __name__ == '__main__':
     parser.add_argument('--yaml', type=str, default='./data/coco.yaml', help='hyper parameter of dataset ')
     parser.add_argument('-i', '--info', type=str, default='', help='information of  ')
     parser.add_argument('-t', '--task', type=str, default='train', help='train or test')
-    parser.add_argument('-b', '--batch', type=int, default=32, help='input batch size')
+    parser.add_argument('-b', '--batch', type=int, default=1, help='input batch size')
     parser.add_argument('-e', '--epoch', type=int, default=300, help='input the number of epochs')
     parser.add_argument('-p', '--preprocessing', type=bool, default=True, action=argparse.BooleanOptionalAction)
     parser.add_argument('--exp-dir', type=str, default='run', help='directory of result')
 
-    pr = parser.parse_args()
-    train(pr)
+    para = parser.parse_args()
+    train(para)
 #     df1 = pd.read_hdf(Path(save_path.resolve(), 'hdf5_predictions.h5'))
 #     print("DataFrame read from the HDF5 file through pandas:")
 
