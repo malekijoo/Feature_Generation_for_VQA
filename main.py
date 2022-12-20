@@ -13,7 +13,7 @@ import tensorflow as tf
 
 
 def train(params):
-    cfgs = Cfgs(pr)
+    cfgs = Cfgs(params)
     print(cfgs)
     yolo = YoloPred(cfgs)
     a = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
@@ -69,8 +69,8 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--preprocessing', type=bool, default=True, action=argparse.BooleanOptionalAction)
     parser.add_argument('--exp-dir', type=str, default='run', help='directory of result')
 
-    para = parser.parse_args()
-    train(para)
+    params = parser.parse_args()
+    train(params)
 #     df1 = pd.read_hdf(Path(save_path.resolve(), 'hdf5_predictions.h5'))
 #     print("DataFrame read from the HDF5 file through pandas:")
 
