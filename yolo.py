@@ -66,18 +66,9 @@ class YoloPred:
         if conf_tr > 0:
             print(f'Confidence threshold is tr={conf_tr}. It means the BBox lower than the tr will be filtered')
             dummy_df = dummy_df[dummy_df['conf'] >= conf_tr]
+            tg = dummy_df[['x1', 'y1', 'x2', 'y2']].values.to_list()
+        return tg, dummy_df
 
-        return dummy_df
-
-    @staticmethod
-    def xyxy2xywh(x):
-        # Convert nx4 boxes from [x1, y1, x2, y2] to [x, y, w, h] where xy1=top-left, xy2=bottom-right
-        y = x.copy()
-        y[:, 0] = (x[:, 0] + x[:, 2]) / 2  # x center
-        y[:, 1] = (x[:, 1] + x[:, 3]) / 2  # y center
-        y[:, 2] = x[:, 2] - x[:, 0]  # width
-        y[:, 3] = x[:, 3] - x[:, 1]  # height
-        return y
 
 
 if __name__ == '__main__':

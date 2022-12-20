@@ -19,14 +19,13 @@ def train(params):
     a = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
     print(a)
     print(a.shape)
-    cfgs = Cfgs(pr)
     coco = CoCo(cfgs=cfgs)
     # {'images', 'images_info', 'bbox', 'labels', 'num_boxes', 'weights'}
     dataloader = coco.dataloader
     model = FExt_Model()
 
 
-    for batch_i, (img, targets, paths, shapes) in enumerate(tqdm(dataloader, desc=s)):
+    for batch_i, (img, targets, paths, shapes) in enumerate(tqdm(dataloader)):
         if batch_i == 1:
             img /= 255.0  # 0 - 255 to 0.0 - 1.0
             nb, _, height, width = img.shape
@@ -35,7 +34,8 @@ def train(params):
             print(type(targets), targets.shape)
             print(type(paths), paths)
             print(shapes)
-
+            a = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
+            coco.bb_crop_image
     # img_path = 'elephant.jpg'
     # img = image.load_img(img_path, target_size=(224, 224))
     # x = image.img_to_array(img)
