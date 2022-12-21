@@ -17,7 +17,7 @@ def train(params):
     cfgs = Cfgs(params)
     print(cfgs)
     yolo = YoloPred(cfgs)
-    tg, df = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
+    # tg, df = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
     coco = CoCo(cfgs=cfgs)
     # {'images', 'images_info', 'bbox', 'labels', 'num_boxes', 'weights'}
     dataloader = coco.dataloader

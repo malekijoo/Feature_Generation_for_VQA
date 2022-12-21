@@ -74,19 +74,13 @@ class CoCo:
         self._single_cls = True
         check_dataset(cfgs.hyp)
 
-        self.dataloader = create_dataloader(cfgs.hyp[self.task], self.size, self.batch_size,
-                                            self._stride, self._single_cls,
-                                            pad=0.5, rect=True,
-                                            prefix=colorstr(f'{self.task}: '))[0]
-
-        # if self.preprocessing:
-        #     self.ds = self.ds.map(functools.partial(preprocess, bgr=True),
-        #                           num_parallel_calls=tf.data.experimental.AUTOTUNE)
-        #     # resize to 640*640
-        #     self.ds = self.ds.map(lambda img: tf.image.resize_with_pad(img, target_height=640, target_width=640))
+        self.dataloader, self.dataset = create_dataloader(cfgs.hyp[self.task], self.size, self.batch_size,
+                                                          self._stride, self._single_cls,
+                                                          pad=0.5, rect=True,
+                                                          prefix=colorstr(f'{self.task}: '))
 
     @staticmethod
-    def bb_crop_image(img, tg, tg_size=(224, 224)):
+    def bb_crop_image(img, tg, tg_size=(255, 255)):
         # Batch, x, y, w, h = tg # target (tg) should be 5D array,
         height, width = tg_size
         img = [tf.image.crop_to_bounding_box(img, x[0], x[1], x[2], x[3]) for x in tg]
