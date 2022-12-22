@@ -15,7 +15,6 @@ import tensorflow as tf
 def train(params):
 
     cfgs = Cfgs(params)
-    print(cfgs)
     yolo = YoloPred(cfgs)
     # tg, df = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
     coco = CoCo(cfgs=cfgs)
@@ -32,7 +31,8 @@ def train(params):
             nb, _, height, width = img.shape
 
             filename = paths[0]
-            print('\n ** \n filename ', filename, '000000018908.jpg')
+            print('\n ** \n filename ', filename, )
+            filename = '000000018908.jpg'
             tg, df, key = yolo.img_extract(filename, top_k=False, conf_tr=0.3)
             print('tg shape ', np.array(tg).shape)
             print('key ', key)

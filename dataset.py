@@ -84,6 +84,7 @@ class CoCo:
         # Batch, x, y, w, h = tg # target (tg) should be 5D array,
         print(len(img))
         height, width = tg_size
+        img = xyxy2xywh(img)
         img = [tf.image.crop_to_bounding_box(img, x[0], x[1], x[2], x[3]) for x in tg]
         print(np.array(img).shape)
         img = tf.data.Dataset.from_tensor_slices(img)
