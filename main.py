@@ -58,6 +58,7 @@ def train(params):
 
             npz_dict = npz_dict.copy()
             np.savez(str(Path(cfgs.save_path, filename)), npz_dict)
+
             # coco.bb_crop_image(im, tg)
             # xx = tf.data.frosilice().batch(32)
             # output = model(xx)
