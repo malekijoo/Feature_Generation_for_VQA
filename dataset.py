@@ -84,8 +84,8 @@ class CoCo:
         # Batch, x, y, w, h = tg # target (tg) should be 5D array,
         height, width = tg_size
         img = [tf.image.crop_to_bounding_box(img, x[0], x[1], x[2], x[3]) for x in tg]
-        tf.data
-        cropped_img = img.map(lambda img: tf.image.resize_with_pad(img, target_height=height, target_width=width))
+        img = tf.data.Dataset.from_tensor_slices(img)
+        cropped_img = img.map(lambda x: tf.image.resize_with_pad(x, target_height=height, target_width=width))
 
         return cropped_img
 

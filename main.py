@@ -26,8 +26,8 @@ def train(params):
     vqa_dict = {}
     for batch_i, (img, targets, paths, shapes) in enumerate(tqdm(dataloader)):
         if batch_i == 1:
-            img = img.numpy
-            targets = targets.numpy
+            img = img.numpy()
+            targets = targets.numpy()
             # img /= 255.0  # 0 - 255 to 0.0 - 1.0
             nb, _, height, width = img.shape
 
