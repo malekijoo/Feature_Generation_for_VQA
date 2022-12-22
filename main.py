@@ -4,10 +4,11 @@ import pandas
 import argparse
 import numpy as np
 from tqdm import tqdm
-from model import FExt_Model
+from model import FExt
 from dataset import CoCo
-from cfgs.base_cfg import Cfgs
+from pathlib import Path
 from yolo import YoloPred
+from cfgs.base_cfg import Cfgs
 import tensorflow as tf
 
 
@@ -20,9 +21,9 @@ def train(params):
     coco = CoCo(cfgs=cfgs)
     # {'images', 'images_info', 'bbox', 'labels', 'num_boxes', 'weights'}
     dataloader = coco.dataloader
-    model = FExt_Model()
+    model = FExt()
     print(type(dataloader))
-
+    vqa_dict = {}
     for batch_i, (img, targets, paths, shapes) in enumerate(tqdm(dataloader)):
         if batch_i == 1:
             img = img.numpy
@@ -31,10 +32,12 @@ def train(params):
             nb, _, height, width = img.shape
 
             filename = paths[0]
-            tg, df = yolo.img_extract(filename, top_k=False, conf_tr=0.3)
+            tg, df, key = yolo.img_extract(filename, top_k=False, conf_tr=0.3)
             print('tg shape ', np.array(tg).shape)
+            print('key ', key)
             bb_imgs = coco.bb_crop_image(img, tg)
             print('\n ********** \n ')
+
             print('bb_imgs ', type(bb_imgs), bb_imgs.shape)
             print('\n ********** \n ')
             print(type(img), img.shape)
@@ -42,7 +45,19 @@ def train(params):
             print(type(paths), paths)
             print(shapes)
 
+            filename = f'COCO_val2014_{key}.npz'
+            np.savez(filename, )
+            output = model(bb_imgs)
 
+            vqa_dict['x'] = output
+            vqa_dict['image_w'] = width
+            vqa_dict['image_h'] = height
+            vqa_dict['num_bbox'] = len(tg)
+            vqa_dict['bbox'] = tg
+            print('output shape ', output.shape)
+
+            npz_dict = npz_dict.copy()
+            np.savez(str(Path(cfgs.save_path, filename)), npz_dict)
             # coco.bb_crop_image(im, tg)
             # xx = tf.data.frosilice().batch(32)
             # output = model(xx)
@@ -113,3 +128,22 @@ if __name__ == '__main__':
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+
+# ['val2014/COCO_val2014_000000306395.jpg.npz']
+#
+# the
+# loop
+# 0 is starting
+# val2014 / COCO_val2014_000000306395.jpg.npz
+#
+# 306395
+# (2048, 25)
+# ['x', 'image_w', 'bbox', 'num_bbox', 'image_h']
+# bbox
+# shape = (25, 4)
+# image_w = 640
+# num_bbox = 25
+# image_h = 480
+# (25, 2048)
+# Pre - Loading: [0 | 40504]
