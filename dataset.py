@@ -85,7 +85,7 @@ class CoCo:
         print(len(img))
         height, width = tg_size
         tg = [xyxy2xywh(target) for target in tg]
-        print(np.array(tg).shape)
+        print('shape tg', np.array(tg).shape)
         cropped_img = [tf.image.crop_to_bounding_box(img, x[0], x[1], x[2], x[3]) for x in tg]
         print(np.array(cropped_img).shape)
         img = tf.data.Dataset.from_tensor_slices(img)
