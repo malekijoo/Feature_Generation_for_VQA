@@ -29,10 +29,10 @@ class YoloPred:
                                     'y2': np.float64,
                                     })
 
-        _pred_df['x1'] = _pred_df['x1'].astype(np.float16) # apply(np.floor)
-        _pred_df['y1'] = _pred_df['y1'].astype(np.float16) # .apply(np.floor)
-        _pred_df['x2'] = _pred_df['x2'].astype(np.float16) # .apply(np.ceil)
-        _pred_df['y2'] = _pred_df['y2'].astype(np.float16) # .apply(np.ceil)
+        _pred_df['x1'] = _pred_df['x1'].apply(np.floor).astype(np.int32) #
+        _pred_df['y1'] = _pred_df['y1'].apply(np.floor).astype(np.int32) #
+        _pred_df['x2'] = _pred_df['x2'].apply(np.ceil).astype(np.int32) #
+        _pred_df['y2'] = _pred_df['y2'].apply(np.ceil).astype(np.int32) #
 
         # _pred_df[_pred_df.columns[0:4]] = YoloPred.xyxy2xywh(_pred_df[_pred_df.columns[0:4]].to_numpy())
         return _pred_df
