@@ -23,7 +23,7 @@ from tqdm import tqdm
 
 import pickle
 from copy import deepcopy
-#from pycocotools import mask as maskUtils
+# from pycocotools import mask as maskUtils
 from torchvision.utils import save_image
 from torchvision.ops import roi_pool, roi_align, ps_roi_pool, ps_roi_align
 from utils import check_dataset
@@ -80,7 +80,7 @@ class CoCo:
                                                           prefix=colorstr(f'{self.task}: '))
 
     @staticmethod
-    def bb_crop_image(img, tg, tg_size=(127, 127)):
+    def bb_crop_image(img, tg, tg_size=(299, 299)):
         # Batch, x, y, w, h = tg # target (tg) should be 5D array,
         img = np.squeeze(img, axis=0).transpose(1, 2, 0)
         img_height, img_width, _ = img.shape
@@ -94,17 +94,12 @@ class CoCo:
             if xmax < img_width and ymax < img_height:
                 cropped_img.append(tf.image.crop_to_bounding_box(img, ymin, xmin,
                                                                  ymax - ymin, xmax - xmin))
-        # print(cropped_img)
-        # cropped_img = np.array(cropped_img)
-        # print('a shape', cropped_img.shape)
-        # cropped_img = tf.data.Dataset.from_tensor_slices(cropped_img)
-        cropped_img = tf.stack(cropped_img, axis=0)
-        cropped_img = cropped_img.map(lambda x: tf.image.resize_with_pad(x,
-                                                                         target_height=tg_height,
-                                                                         target_width=tg_width))
-        print('cropped_img shape ', cropped_img.shape, type(cropped_img))
-        return cropped_img
+        cropped_img = [tf.image.resize_with_pad(x, target_height=tg_height,
+                                                target_width=tg_width).numpy()
+                       for x in cropped_img]
 
+        print('cropped_img shape ', np.array(cropped_img).shape, type(cropped_img))
+        return np.array(cropped_img)
 
     # def _download(self):
     #
@@ -133,8 +128,6 @@ class CoCo:
     #     # ds_train = ds_train.prefetch(2)
     #     # features = tf.compat.v1.data.make_one_shot_iterator(train_dataset).get_next()
     #     # image, label = features['image'], features['label']
-
-
 
 
 # Dataset utils and dataloaders
@@ -169,7 +162,9 @@ def exif_size(img):
 
     return s
 
-def create_dataloader(path, imgsz, batch_size, stride, single_cls, hyp=None, augment=False, cache=False, pad=0.0, rect=False,
+
+def create_dataloader(path, imgsz, batch_size, stride, single_cls, hyp=None, augment=False, cache=False, pad=0.0,
+                      rect=False,
                       rank=-1, world_size=1, workers=8, image_weights=False, quad=False, prefix=''):
     # Make sure only the first process in DDP process the dataset first, and the following others can use the cache
     with torch_distributed_zero_first(rank):
@@ -310,6 +305,7 @@ class LoadImages:  # for inference
 
     def __len__(self):
         return self.nf  # number of files
+
 
 def img2label_paths(img_paths):
     # Define label paths as a function of image paths
@@ -1189,7 +1185,6 @@ class Albumentations:
             A.ImageCompression(quality_lower=75, p=0.01), ],
             bbox_params=A.BboxParams(format='pascal_voc', label_fields=['class_labels']))
 
-
     def __call__(self, im, labels, p=1.0):
         if self.transform and random.random() < p:
             new = self.transform(image=im, bboxes=labels[:, 1:], class_labels=labels[:, 0])  # transformed
@@ -1270,9 +1265,7 @@ def autosplit(path='../coco', weights=(0.9, 0.1, 0.0), annotated_only=False):
                 f.write(str(img) + '\n')  # add image to txt file
 
 
-
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--yaml', type=str, default='./data/coco.yaml', help='hyper parameter of dataset ')
     parser.add_argument('-i', '--info', type=str, default='', help='information of  ')

@@ -39,7 +39,7 @@ def train(params):
             bb_imgs = coco.bb_crop_image(img, tg)
             print('\n ********** \n ')
 
-            print('bb_imgs ', type(bb_imgs), bb_imgs.shape)
+            print('bb_imgs ', type(bb_imgs), np.array(bb_imgs).shape)
             print('\n ********** \n ')
             print(type(img), img.shape)
             print(type(targets), targets.shape)
@@ -47,7 +47,6 @@ def train(params):
             print(shapes)
 
             filename = f'COCO_val2014_{key}.npz'
-            np.savez(filename, )
             output = model(bb_imgs)
 
             vqa_dict['x'] = output
@@ -56,7 +55,9 @@ def train(params):
             vqa_dict['num_bbox'] = len(tg)
             vqa_dict['bbox'] = tg
             print('output shape ', output.shape)
-
+            print('vqa_dict', vqa_dict)
+            print(filename)
+            break
             npz_dict = npz_dict.copy()
             np.savez(str(Path(cfgs.save_path, filename)), npz_dict)
 

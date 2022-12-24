@@ -16,7 +16,7 @@ class FExt(tf.keras.Model):
     def __init__(self):
         super().__init__()
 
-        self.base_model = Xception(weights='imagenet', include_top=False)
+        self.base_model = Xception(weights='imagenet')
         # avg pool (GlobalAveragePooling  (None, 2048)
         # self.model = Model(inputs=base_model.input, outputs=base_model.get_layer('avg_pool').output)
 
