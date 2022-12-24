@@ -82,9 +82,7 @@ class CoCo:
     @staticmethod
     def bb_crop_image(img, tg, tg_size=(127, 127)):
         # Batch, x, y, w, h = tg # target (tg) should be 5D array,
-        print('img before squeeze ', type(img), img.shape)
         img = np.squeeze(img, axis=0).transpose(1, 2, 0)
-        print('img after squeeze ', type(img), img.shape)
         img_height, img_width, _ = img.shape
         tg_height, tg_width = tg_size
         print('shape tg', np.array(tg).shape)
