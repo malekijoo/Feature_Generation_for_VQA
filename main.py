@@ -58,7 +58,7 @@ def train(params):
             print('vqa_dict', vqa_dict)
             print(filename)
             break
-            npz_dict = npz_dict.copy()
+            npz_dict = vqa_dict.copy()
             np.savez(str(Path(cfgs.save_path, filename)), npz_dict)
 
             # coco.bb_crop_image(im, tg)
