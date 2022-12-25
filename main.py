@@ -49,7 +49,7 @@ def train(params):
             filename = f'COCO_val2014_{key}.npz'
             output = model(bb_imgs)
 
-            vqa_dict['x'] = output
+            vqa_dict['x'] = output.numpy().copy()
             vqa_dict['image_w'] = width
             vqa_dict['image_h'] = height
             vqa_dict['num_bbox'] = len(tg)
