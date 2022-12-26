@@ -21,8 +21,8 @@ def train(params):
     # {'images', 'images_info', 'bbox', 'labels', 'num_boxes', 'weights'}
     dataloader = coco.dataloader
     model = FExt()
-    print(type(dataloader))
     vqa_dict = {}
+
     for batch_i, (img, targets, paths, shapes) in enumerate(tqdm(dataloader)):
         if batch_i == 1:
             img = img.numpy()
@@ -31,61 +31,24 @@ def train(params):
             nb, _, height, width = img.shape
 
             filename = paths[0]
-            print('\n ** \n filename ', filename, img.shape)
-            filename = '000000018908.jpg'
+            # filename = '000000018908.jpg'
             tg, df, key = yolo.img_extract(filename, top_k=False, conf_tr=0.3)
-            print('tg shape ', np.array(tg).shape)
-            print('key ', key)
             bb_imgs = coco.bb_crop_image(img, tg)
-            print('\n ********** \n ')
+            output = model(bb_imgs, preprocessing=cfgs.preprocessing)
+            print('output   _____1  ', type(output), output.shape)
 
-            print('bb_imgs ', type(bb_imgs), np.array(bb_imgs).shape)
-            print('\n ********** \n ')
-            print(type(img), img.shape)
-            print(type(targets), targets.shape)
-            print(type(paths), paths)
-            print(shapes)
-
-            filename = f'COCO_val2014_{key}.npz'
-            output = model(bb_imgs)
-
-            vqa_dict['x'] = output.numpy().copy()
-            vqa_dict['image_w'] = width
-            vqa_dict['image_h'] = height
-            vqa_dict['num_bbox'] = len(tg)
-            vqa_dict['bbox'] = tg
-            print('output shape ', output.shape)
-            print('vqa_dict', vqa_dict)
-            print(filename)
-            break
-            npz_dict = vqa_dict.copy()
-            np.savez(str(Path(cfgs.save_path, filename)), npz_dict)
-
-            # coco.bb_crop_image(im, tg)
-            # xx = tf.data.frosilice().batch(32)
-            # output = model(xx)
-            # output + path will be save like mcan-vqa
+            vqa_dict['x'] = output
+            vqa_dict['image_w'], vqa_dict['image_h'] = width, height
+            vqa_dict['bbox'], vqa_dict['num_bbox'] = tg, output.shape[0]
+            save_2_numpyz(cfgs.save_path, key, vqa_dict)
 
 
 
-    # img_path = 'elephant.jpg'
-    # img = image.load_img(img_path, target_size=(224, 224))
-    # x = image.img_to_array(img)
-    # x = np.expand_dims(x, axis=0)
-    # x = preprocess_input(x)
-    #
-    # block4_pool_features = model.predict(x)
 
-    # cfgs = Cfgs(params)
-    # print(cfgs.gdrive)
-    # coco = CoCo(params)
-    # ds_train, ds_info = coco.ds, coco.ds_info
-    # coco_hyp = coco.hyp
-    # print('coco ', coco)
-    # print(type(ds_train), ds_train)
-    # print(type(ds_info), ds_info)
-    # print(coco_hyp['names_no'])
-    # print('coco hype ', coco_hyp)
+def save_2_numpyz(path, key, dic):
+    filename = f'COCO_val2014_{key}.npz'
+    npz_dict = dic.copy()
+    np.savez(str(Path(path, filename)), npz_dict)
 
 #
 # image type  <class 'torch.Tensor'> torch.Size([1, 3, 128, 672])

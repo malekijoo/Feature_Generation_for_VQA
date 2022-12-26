@@ -49,7 +49,7 @@ class YoloPred:
                       or the number of BB with higher a specific confidence
         :param conf_tr: the threshold which apply to confidence
         :param k: the top k number of BB with the highest confidence.
-        :return: a dataframe of BB with 7 columns
+        :return: Numpy array of BBox, a dataframe of BB with 7 columns, the name of the img
 
         """
         if conf_tr >= 1:

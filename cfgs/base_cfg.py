@@ -10,7 +10,7 @@ import numpy as np
 
 class Cfgs(PathCfg):
 
-    def __init__(self, parser_args, mode='base'):
+    def __init__(self, parser_args):
 
         super(Cfgs, self).__init__(parser_args.exp_dir)
 
@@ -19,7 +19,6 @@ class Cfgs(PathCfg):
         self.hyp['cls_no'] = [str(i) for i in range(self.hyp['nc'])]
 
         self.parser_args = Cfgs.parse_to_dict(parser_args)
-        self.mode = mode
         self.epoch = parser_args.epoch
         self.batch_size = parser_args.batch
         self.preprocessing = parser_args.preprocessing

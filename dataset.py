@@ -43,19 +43,6 @@ class CoCo:
                    'num_boxes': A tensor of int32 and shape[1, 1],
                    'weights': A tensor of float32 and shape[1, num_boxes]
                     }
-        in Tensorflow : https://www.tensorflow.org/datasets/catalog/coco
-                FeaturesDict({
-                'image': Image(shape=(None, None, 3), dtype=uint8),
-                'image/filename': Text(shape=(), dtype=string),
-                'image/id': int64,
-                'objects': Sequence({
-                'area': int64,
-                'bbox': BBoxFeature(shape=(4,), dtype=float32),
-                'id': int64,
-                'is_crowd': bool,
-                'label': ClassLabel(shape=(), dtype=int64, num_classes=80),
-                }),
-                })
         """
 
         self.hyp = cfgs.hyp
