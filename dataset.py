@@ -94,6 +94,7 @@ class CoCo:
     #     #                        with_info=True,
     #     #                        )
     #     # assert isinstance(_ds, tf.data.Dataset), "DataSetError: ds is not an instance of tf.data.Dataset"
+    #     # assert isinstance(_ds, tf.data.Dataset), "DataSetError: ds is not an instance of tf.data.Dataset"
     #     # return _ds, _ds_inf
     #     # if ut.check_dataset(cfgs):
     #     #     print(f'Tha dataset has already downloaded and unzipped in {self.path}!')
@@ -347,7 +348,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         if exists:
             d = f"Scanning '{cache_path}' images and labels... {nf} found, {nm} missing, {ne} empty, {nc} corrupted"
             tqdm(None, desc=prefix + d, total=n, initial=n)  # display cache results
-        assert nf > 0 or not augment, f'{prefix}No labels in {cache_path}. Can not extractor without labels. See {help_url}'
+        assert nf > 0 or not augment, f'{prefix}No labels in {cache_path}. Can not train without labels. See {help_url}'
 
         # Read cache
         cache.pop('hash')  # remove hash
@@ -1227,7 +1228,7 @@ def extract_boxes(path='../coco/'):  # from utils.datasets import *; extract_box
 
 
 def autosplit(path='../coco', weights=(0.9, 0.1, 0.0), annotated_only=False):
-    """ Autosplit a dataset into extractor/val/test splits and save path/autosplit_*.txt files
+    """ Autosplit a dataset into train/val/test splits and save path/autosplit_*.txt files
     Usage: from utils.datasets import *; autosplit('../coco')
     Arguments
         path:           Path to images directory
@@ -1253,7 +1254,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--yaml', type=str, default='./data/coco.yaml', help='hyper parameter of dataset ')
     parser.add_argument('-i', '--info', type=str, default='', help='information of  ')
-    parser.add_argument('-t', '--task', type=str, default='extractor', help='extractor or test')
+    parser.add_argument('-t', '--task', type=str, default='train', help='train or test')
     parser.add_argument('-b', '--batch', type=int, default=1, help='input batch size')
     parser.add_argument('-e', '--epoch', type=int, default=300, help='input the number of epochs')
     parser.add_argument('-p', '--preprocessing', type=bool, default=True, action=argparse.BooleanOptionalAction)
