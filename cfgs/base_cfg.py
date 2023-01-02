@@ -14,7 +14,6 @@ class Cfgs(PathCfg):
 
         super(Cfgs, self).__init__(parser_args.exp_dir)
 
-        self.SEED = random.randint(0, 99999999)
         self.hyp = Cfgs.yaml_reader(parser_args.yaml)
         self.hyp['cls_no'] = [str(i) for i in range(self.hyp['nc'])]
 

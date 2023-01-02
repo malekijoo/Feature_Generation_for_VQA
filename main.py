@@ -11,6 +11,8 @@ from yolo import YoloPred
 from cfgs.base_cfg import Cfgs
 import tensorflow as tf
 
+tf.keras.backend.experimental.enable_tf_random_generator()
+tf.keras.utils.set_random_seed(1337)
 
 def extractor(params):
 
@@ -31,11 +33,9 @@ def extractor(params):
             nb, _, height, width = img.shape
 
             filename = paths[0]
-            # filename = '000000018908.jpg'
             tg, df, key = yolo.img_extract(filename, top_k=False, conf_tr=0.3)
             bb_imgs = coco.bb_crop_image(img, tg)
             output = model(bb_imgs, preprocessing=cfgs.preprocessing)
-            print('output   _____1  ', type(output), output.shape)
 
             vqa_dict['x'] = output
             vqa_dict['image_w'], vqa_dict['image_h'] = width, height
@@ -43,13 +43,10 @@ def extractor(params):
             save_2_numpyz(cfgs.save_path, key, vqa_dict)
 
 
-
-
 def save_2_numpyz(path, key, dic):
     filename = f'COCO_val2014_{key}.npz'
     npz_dict = dic.copy()
     np.savez(str(Path(path, filename)), npz_dict)
-
 
 
 # Press the green button in the gutter to run the script.
