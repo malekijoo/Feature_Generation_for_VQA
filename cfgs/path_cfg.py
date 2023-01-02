@@ -16,7 +16,6 @@ class PathCfg:
         self.coco_path = './coco'
         self.exp_dir = (dirname if dirname else 'run')
 
-
         if not os.path.isdir('./coco'):
             Path(self.coco_path).mkdir(parents=True, exist_ok=True)
             print('coco dataset directory is built: ', self.coco_path)
