@@ -46,7 +46,7 @@ def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scale
 
 def check_dataset(cfgs):
 
-    item = ['extractor', 'val', 'test']
+    item = ['train', 'val', 'test']
 
     list_files = [value for key, value in cfgs.hyp.items() if key in item]
     a_exist = [True if os.path.isfile(f) else False for f in list_files]
@@ -219,7 +219,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--yaml', type=str, default='./data/coco.yaml', help='hyper parameter of dataset ')
     parser.add_argument('-i', '--info', type=str, default='', help='information of  ')
-    parser.add_argument('-t', '--task', type=str, default='extractor', help='extractor or test')
+    parser.add_argument('-t', '--task', type=str, default='train', help='train or test')
     parser.add_argument('-b', '--batch', type=int, default=32, help='input batch size')
     parser.add_argument('-e', '--epoch', type=int, default=300, help='input the number of epochs')
     parser.add_argument('-p', '--preprocessing', type=bool, default=True, action=argparse.BooleanOptionalAction)
