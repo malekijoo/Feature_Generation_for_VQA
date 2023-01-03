@@ -41,7 +41,7 @@ class YoloPred:
     def pred_df(self, predn):
         self._pred_df = predn
 
-    def img_extract(self, key, conf_tr=0, top_k=False, k=10):
+    def img_extract(self, key, conf_tr=0, top_k=False, k=100):
         """
         :param key: the image filename, e.x. '000000003694.jpg'
         :param top_k: Boolean type, select the type of picking
@@ -61,12 +61,16 @@ class YoloPred:
         img_name = 'coco/images/train2017/' + key
         dummy_df = self.pred_df[self.pred_df['path'] == img_name].sort_values(by=['conf'], ascending=False)
         # print(dummy_df.shape)
-        if top_k:
-            dummy_df = dummy_df.head(k)
+
         if conf_tr > 0:
             # print(f'Confidence threshold is tr={conf_tr}. It means the BBox lower than the tr will be filtered')
             dummy_df = dummy_df[dummy_df['conf'] >= conf_tr]
-            tg = dummy_df[['x1', 'y1', 'x2', 'y2']].values.tolist()
+
+        if top_k:
+            dummy_df = dummy_df.head(k)
+
+        tg = dummy_df[['x1', 'y1', 'x2', 'y2']].values.tolist()
+
         return np.array(tg), dummy_df, key
 
 
