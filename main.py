@@ -34,12 +34,9 @@ def extractor(params):
             nb, _, height, width = img.shape
 
             filename = paths[0]
-            print(f' $$   filename {filename}')
 
             tg, df, key = yolo.img_extract(filename, top_k=False, conf_tr=0.3)
-            print('tg shape ', tg.shape)
             bb_imgs = coco.bb_crop_image(img, tg)
-            print('bb image shape ', bb_imgs.shape)
             output = model(bb_imgs, preprocessing=cfgs.preprocessing)
 
             vqa_dict['x'] = output
