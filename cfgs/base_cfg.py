@@ -22,7 +22,6 @@ class Cfgs(PathCfg):
         self.batch_size = parser_args.batch
         self.preprocessing = parser_args.preprocessing
         self.task = parser_args.task
-        self.yolo_pred_filename = 'predictions.csv'
         self.imgsize = 640
 
     @staticmethod

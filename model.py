@@ -9,11 +9,13 @@ from tensorflow.keras.applications.xception import preprocess_input
 class FExt:
     def __init__(self):
         self.base_model = Xception(weights='imagenet', include_top=True)
-        self.model = Model(inputs=base_model.input, outputs=base_model.get_layer('avg_pool').output)
+        self.model = Model(inputs=self.base_model.input, outputs=self.base_model.get_layer('avg_pool').output)
 
     def __call__(self, x, preprocessing=True):
+        print('before preprocessing ValueError ', x.shape)
         if preprocessing:
             x = preprocess_input(x)
+            print('before reaising ValueError ', x.shape)
         return self.model.predict(x)
 
     # def __init__(self, *args, **kwargs):

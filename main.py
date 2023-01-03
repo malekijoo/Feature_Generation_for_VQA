@@ -28,13 +28,18 @@ def extractor(params):
     for batch_i, (img, targets, paths, shapes) in enumerate(tqdm(dataloader)):
         if batch_i == 1:
             img = img.numpy()
-            targets = targets.numpy()
+            print('img shape first line in the loop', img.shape)
+            # targets = targets.numpy()
             # img /= 255.0  # 0 - 255 to 0.0 - 1.0
             nb, _, height, width = img.shape
 
             filename = paths[0]
+            print(f' $$   filename {filename}')
+
             tg, df, key = yolo.img_extract(filename, top_k=False, conf_tr=0.3)
+            print('tg shape ', tg.shape)
             bb_imgs = coco.bb_crop_image(img, tg)
+            print('bb image shape ', bb_imgs.shape)
             output = model(bb_imgs, preprocessing=cfgs.preprocessing)
 
             vqa_dict['x'] = output

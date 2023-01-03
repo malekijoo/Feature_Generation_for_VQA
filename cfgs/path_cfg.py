@@ -14,6 +14,7 @@ class PathCfg:
         self.cfgs_path = './cfgs'
         self.result_dir = './exp'
         self.coco_path = './coco'
+        self.yolo_pred_filename = 'predictions.csv'
         self.exp_dir = (dirname if dirname else 'run')
 
         if not os.path.isdir('./coco'):
@@ -23,6 +24,8 @@ class PathCfg:
         if os.path.isdir('/content/gdrive/MyDrive/'):
             self.gdrive_path = '/content/gdrive/MyDrive'
             self.result_dir = '/content/gdrive/MyDrive/exp'
+            self.yolo_path = '/content/gdrive/MyDrive/results/predn'
+
             self.gd_status = True
         else:
             self.gd_status = False
