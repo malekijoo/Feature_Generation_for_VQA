@@ -54,7 +54,7 @@ class YoloPred:
         """
         if conf_tr >= 1:
             conf_tr /= 100
-            print(f'Confidence threshold is tr={conf_tr}%. It means the BBox lower than the tr will be filtered')
+            # print(f'Confidence threshold is tr={conf_tr}%. It means the BBox lower than the tr will be filtered')
 
         spilited_key = key.split('/')
         key = [x for x in spilited_key if '.jpg' in x][0]
@@ -64,7 +64,7 @@ class YoloPred:
         if top_k:
             dummy_df = dummy_df.head(k)
         if conf_tr > 0:
-            print(f'Confidence threshold is tr={conf_tr}. It means the BBox lower than the tr will be filtered')
+            # print(f'Confidence threshold is tr={conf_tr}. It means the BBox lower than the tr will be filtered')
             dummy_df = dummy_df[dummy_df['conf'] >= conf_tr]
             tg = dummy_df[['x1', 'y1', 'x2', 'y2']].values.tolist()
         return np.array(tg), dummy_df, key
@@ -85,9 +85,9 @@ if __name__ == '__main__':
     cfgs = Cfgs(params)
 
     yolo = YoloPred(cfgs)
-    print(yolo.pred_df.head())
+    # print(yolo.pred_df.head())
     k = 'coco/images/train2017/000000148246.jpg'
-    print(yolo.img_extract(k, conf_tr=30))
+    # print(yolo.img_extract(k, conf_tr=30))
 
 
 

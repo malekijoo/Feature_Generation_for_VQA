@@ -27,7 +27,6 @@ def extractor(params):
 
     for batch_i, (img, targets, paths, shapes) in enumerate(tqdm(dataloader)):
         img = img.numpy()
-        print('img shape first line in the loop', img.shape)
         # targets = targets.numpy()
         # img /= 255.0  # 0 - 255 to 0.0 - 1.0
         nb, _, height, width = img.shape
@@ -39,12 +38,13 @@ def extractor(params):
         vqa_dict['x'] = output
         vqa_dict['image_w'], vqa_dict['image_h'] = width, height
         vqa_dict['bbox'], vqa_dict['num_bbox'] = tg, output.shape[0]
-        save_2_numpyz(cfgs.save_path, key, vqa_dict)
+        save_2_numpyz(cfgs.save_path, key, vqa_dict, cfgs.task)
 
 
-def save_2_numpyz(path, key, dic):
-    filename = f'COCO_val2014_{key}.npz'
+def save_2_numpyz(path, key, dic, task):
+    filename = f'COCO_{task}2017_{key}.npz'
     npz_dict = dic.copy()
+    # print(str(Path(path, filename)))
     np.savez(str(Path(path, filename)), npz_dict)
 
 

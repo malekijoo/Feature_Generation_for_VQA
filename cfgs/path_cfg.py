@@ -19,7 +19,7 @@ class PathCfg:
 
         if not os.path.isdir('./coco'):
             Path(self.coco_path).mkdir(parents=True, exist_ok=True)
-            print('coco dataset directory is built: ', self.coco_path)
+            # print('coco dataset directory is built: ', self.coco_path)
 
         if os.path.isdir('/content/gdrive/MyDrive/'):
             self.gdrive_path = '/content/gdrive/MyDrive'

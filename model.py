@@ -12,10 +12,8 @@ class FExt:
         self.model = Model(inputs=self.base_model.input, outputs=self.base_model.get_layer('avg_pool').output)
 
     def __call__(self, x, preprocessing=True):
-        print('before preprocessing ValueError ', x.shape)
         if preprocessing:
             x = preprocess_input(x)
-            print('before reaising ValueError ', x.shape)
         return self.model.predict(x)
 
     # def __init__(self, *args, **kwargs):
@@ -31,5 +29,5 @@ class FExt:
 
 
 if __name__ == '__main__':
-    print('model = FExt()')
+    # print('model = FExt()')
     FExt()
