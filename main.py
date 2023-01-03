@@ -3,6 +3,7 @@ import yaml
 import pandas
 import argparse
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 from model import FExt
 from dataset import CoCo
@@ -24,21 +25,31 @@ def extractor(params):
     dataloader = coco.dataloader
     model = FExt()
     vqa_dict = {}
-
+    emp_list = []
+    nb = 0
     for batch_i, (img, targets, paths, shapes) in enumerate(tqdm(dataloader)):
         img = img.numpy()
         # targets = targets.numpy()
         # img /= 255.0  # 0 - 255 to 0.0 - 1.0
         nb, _, height, width = img.shape
         filename = paths[0]
-        tg, df, key = yolo.img_extract(filename, top_k=True, conf_tr=0.3)
-        bb_imgs = coco.bb_crop_image(img, tg)
-        output = model(bb_imgs, preprocessing=cfgs.preprocessing)
+        img_extractor = yolo.img_extract(filename, top_k=True, conf_tr=0.3)
+        if img_extractor[0]:
+            _, tg, df, key = img_extractor
+            bb_imgs = coco.bb_crop_image(img, tg)
+            output = model(bb_imgs, preprocessing=cfgs.preprocessing)
+            vqa_dict['x'] = output
+            vqa_dict['image_w'], vqa_dict['image_h'] = width, height
+            vqa_dict['bbox'], vqa_dict['num_bbox'] = tg, output.shape[0]
+            save_2_numpyz(cfgs.save_path, key, vqa_dict, cfgs.task)
+        else:
+            emp_list.append(img_extractor[1])
+            nb += 1
 
-        vqa_dict['x'] = output
-        vqa_dict['image_w'], vqa_dict['image_h'] = width, height
-        vqa_dict['bbox'], vqa_dict['num_bbox'] = tg, output.shape[0]
-        save_2_numpyz(cfgs.save_path, key, vqa_dict, cfgs.task)
+    print(f'\n the Number of empty list is {nb}')
+    emp_list_dict = {'name': emp_list}
+    dummy_ = pd.DataFrame(emp_list_dict)
+    dummy_.to_csv(cfgs.result_dir + '/empty_list.csv')
 
 
 def save_2_numpyz(path, key, dic, task):

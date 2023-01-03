@@ -12,12 +12,12 @@ class YoloPred:
     def __init__(self, cfgs):
 
         self.yolo_path = cfgs.yolo_path
-        self.pred_name = cfgs.yolo_pred_filename
+        self.pred_name = cfgs.pred_filename
 
     @property
     def pred_df(self):
 
-        _pred_df = pd.read_csv(self.yolo_path + '/' + self.pred_name) # , index_col=[0])
+        _pred_df = pd.read_csv(self.yolo_path + '/' + self.pred_name)
         _pred_df.columns = ['x1', 'y1', 'x2', 'y2', 'conf', 'cls', 'path']
         _pred_df = _pred_df.drop_duplicates()
 
@@ -59,6 +59,8 @@ class YoloPred:
         spilited_key = key.split('/')
         key = [x for x in spilited_key if '.jpg' in x][0]
         img_name = 'coco/images/train2017/' + key
+        if self.pred_df[self.pred_df['path'] == img_name].size == 0:
+            return [False, key]
         dummy_df = self.pred_df[self.pred_df['path'] == img_name].sort_values(by=['conf'], ascending=False)
         # print(dummy_df.shape)
 
@@ -71,7 +73,7 @@ class YoloPred:
 
         tg = dummy_df[['x1', 'y1', 'x2', 'y2']].values.tolist()
 
-        return np.array(tg), dummy_df, key
+        return [True, np.array(tg), dummy_df, key]
 
 
 

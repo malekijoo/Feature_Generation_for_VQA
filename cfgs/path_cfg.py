@@ -14,7 +14,7 @@ class PathCfg:
         self.cfgs_path = './cfgs'
         self.result_dir = './exp'
         self.coco_path = './coco'
-        self.yolo_pred_filename = 'predictions.csv'
+        self.pred_filename = 'predictions.csv'
         self.exp_dir = (dirname if dirname else 'run')
 
         if not os.path.isdir('./coco'):

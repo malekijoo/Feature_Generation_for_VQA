@@ -214,6 +214,25 @@ def clean_str(s):
     # Cleans a string by replacing special characters with underscore _
     return re.sub(pattern="[|@#!¡·$€%&()=?¿^*;:,¨´><+]", repl="_", string=s)
 
+def chunking():
+
+    file = './coco/train2017.txt'
+    gdrive_path = '/content/gdrive/MyDrive/results/labels/train2017_{}.txt'
+
+    lines_per_file = 2400
+    smallfile = None
+    with open(file) as bigfile:
+        for lineno, line in enumerate(bigfile):
+            if lineno % lines_per_file == 0:
+                if smallfile:
+                    smallfile.close()
+                small_filename = gdrive_path.format(lineno + lines_per_file)
+                smallfile = open(small_filename, "w")
+            smallfile.write(line)
+        if smallfile:
+            smallfile.close()
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
