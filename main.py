@@ -31,9 +31,7 @@ def extractor(params):
         # targets = targets.numpy()
         # img /= 255.0  # 0 - 255 to 0.0 - 1.0
         nb, _, height, width = img.shape
-
         filename = paths[0]
-
         tg, df, key = yolo.img_extract(filename, top_k=False, conf_tr=0.3)
         bb_imgs = coco.bb_crop_image(img, tg)
         output = model(bb_imgs, preprocessing=cfgs.preprocessing)
