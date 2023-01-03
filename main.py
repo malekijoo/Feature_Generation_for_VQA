@@ -26,23 +26,22 @@ def extractor(params):
     vqa_dict = {}
 
     for batch_i, (img, targets, paths, shapes) in enumerate(tqdm(dataloader)):
-        if batch_i == 1:
-            img = img.numpy()
-            print('img shape first line in the loop', img.shape)
-            # targets = targets.numpy()
-            # img /= 255.0  # 0 - 255 to 0.0 - 1.0
-            nb, _, height, width = img.shape
+        img = img.numpy()
+        print('img shape first line in the loop', img.shape)
+        # targets = targets.numpy()
+        # img /= 255.0  # 0 - 255 to 0.0 - 1.0
+        nb, _, height, width = img.shape
 
-            filename = paths[0]
+        filename = paths[0]
 
-            tg, df, key = yolo.img_extract(filename, top_k=False, conf_tr=0.3)
-            bb_imgs = coco.bb_crop_image(img, tg)
-            output = model(bb_imgs, preprocessing=cfgs.preprocessing)
+        tg, df, key = yolo.img_extract(filename, top_k=False, conf_tr=0.3)
+        bb_imgs = coco.bb_crop_image(img, tg)
+        output = model(bb_imgs, preprocessing=cfgs.preprocessing)
 
-            vqa_dict['x'] = output
-            vqa_dict['image_w'], vqa_dict['image_h'] = width, height
-            vqa_dict['bbox'], vqa_dict['num_bbox'] = tg, output.shape[0]
-            save_2_numpyz(cfgs.save_path, key, vqa_dict)
+        vqa_dict['x'] = output
+        vqa_dict['image_w'], vqa_dict['image_h'] = width, height
+        vqa_dict['bbox'], vqa_dict['num_bbox'] = tg, output.shape[0]
+        save_2_numpyz(cfgs.save_path, key, vqa_dict)
 
 
 def save_2_numpyz(path, key, dic):
