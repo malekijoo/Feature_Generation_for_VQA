@@ -15,8 +15,8 @@ import tensorflow as tf
 tf.keras.backend.experimental.enable_tf_random_generator()
 tf.keras.utils.set_random_seed(1337)
 
-def extractor(params):
 
+def extractor(params):
     cfgs = Cfgs(params)
     yolo = YoloPred(cfgs)
     # tg, df = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
@@ -34,18 +34,24 @@ def extractor(params):
         nb, _, height, width = img.shape
         filename = paths[0]
         tg, df, key = yolo.img_extract(filename, top_k=True, conf_tr=0.3)
-        bb_imgs = coco.bb_crop_image(img, tg)
-        output = model(bb_imgs, preprocessing=cfgs.preprocessing)
-        vqa_dict['x'] = output
-        vqa_dict['image_w'], vqa_dict['image_h'] = width, height
-        vqa_dict['bbox'], vqa_dict['num_bbox'] = tg, output.shape[0]
-        save_2_numpyz(cfgs.save_path, key, vqa_dict, cfgs.task)
+        if tg.shape[0] == 0:
+            emp_list.append(key)
+            print(f'file {key} returns None BBox')
+            nb += 1
+        else:
+            bb_imgs = coco.bb_crop_image(img, tg)
+            if bb_imgs.shape[0] == 0:
+                print(f'file {key} returns None BBox')
+            output = model(bb_imgs, preprocessing=cfgs.preprocessing)
+            vqa_dict['x'] = output
+            vqa_dict['image_w'], vqa_dict['image_h'] = width, height
+            vqa_dict['bbox'], vqa_dict['num_bbox'] = tg, output.shape[0]
+            save_2_numpyz(cfgs.save_path, key, vqa_dict, cfgs.task)
 
-
-    # print(f'\n the Number of empty list is {nb}')
-    # emp_list_dict = {'name': emp_list}
-    # dummy_ = pd.DataFrame(emp_list_dict)
-    # dummy_.to_csv(cfgs.result_dir + '/empty_list.csv')
+    print(f'\n the Number of empty list is {nb}')
+    emp_list_dict = {'name': emp_list}
+    dummy_ = pd.DataFrame(emp_list_dict)
+    dummy_.to_csv(cfgs.result_dir + '/empty_list.csv')
 
 
 def save_2_numpyz(path, key, dic, task):
@@ -57,7 +63,6 @@ def save_2_numpyz(path, key, dic, task):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--yaml', type=str, default='./data/coco.yaml', help='hyper parameter of dataset ')
     parser.add_argument('-i', '--info', type=str, default='', help='information of  ')
@@ -71,4 +76,3 @@ if __name__ == '__main__':
     extractor(params)
 #     df1 = pd.read_hdf(Path(save_path.resolve(), 'hdf5_predictions.h5'))
 #     print("DataFrame read from the HDF5 file through pandas:")
-

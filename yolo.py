@@ -62,7 +62,6 @@ class YoloPred:
         # if self.pred_df[self.pred_df['path'] == img_name].size == 0:
         #     return [False, key]
         dummy_df = self.pred_df[self.pred_df['path'] == img_name].sort_values(by=['conf'], ascending=False)
-        # print(dummy_df.shape)
 
         if conf_tr > 0:
             # print(f'Confidence threshold is tr={conf_tr}. It means the BBox lower than the tr will be filtered')
