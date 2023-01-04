@@ -17,6 +17,7 @@ tf.keras.utils.set_random_seed(1337)
 
 
 def extractor(params):
+
     cfgs = Cfgs(params)
     yolo = YoloPred(cfgs)
     # tg, df = yolo.img_extract('000000003694.jpg', top_k=False, conf_tr=0.3)
@@ -42,11 +43,12 @@ def extractor(params):
             bb_imgs = coco.bb_crop_image(img, tg)
             if bb_imgs.shape[0] == 0:
                 print(f'file {key} returns None BBox')
-            output = model(bb_imgs, preprocessing=cfgs.preprocessing)
-            vqa_dict['x'] = output
-            vqa_dict['image_w'], vqa_dict['image_h'] = width, height
-            vqa_dict['bbox'], vqa_dict['num_bbox'] = tg, output.shape[0]
-            save_2_numpyz(cfgs.save_path, key, vqa_dict, cfgs.task)
+            else:
+                output = model(bb_imgs, preprocessing=cfgs.preprocessing)
+                vqa_dict['x'] = output
+                vqa_dict['image_w'], vqa_dict['image_h'] = width, height
+                vqa_dict['bbox'], vqa_dict['num_bbox'] = tg, output.shape[0]
+                save_2_numpyz(cfgs.save_path, key, vqa_dict, cfgs.task)
 
     print(f'\n the Number of empty list is {nb}')
     emp_list_dict = {'name': emp_list}

@@ -73,16 +73,16 @@ class CoCo:
         img_height, img_width, _ = img.shape
         tg_height, tg_width = tg_size
         cropped_img = []
-        print(f'img h {img_height}, img w {img_width}, tg size {(tg_height, tg_width)}')
+        # print(f'img h {img_height}, img w {img_width}, tg size {(tg_height, tg_width)}')
         for t in tg:
             x1, y1, x2, y2 = t
-            print(f' x1 {x1}, y1 {y1}, x2 {x2}, y2 {y2}')
+            # print(f' x1 {x1}, y1 {y1}, x2 {x2}, y2 {y2}')
 
             xmin, xmax = min(x1, x2), max(x1, x2)
             ymin, ymax = min(y1, y2), max(y1, y2)
             if xmax < img_width and ymax < img_height:
                 temp = tf.image.crop_to_bounding_box(img, ymin, xmin, ymax - ymin, xmax - xmin)
-                print(f'temp size {temp.shape}')
+                # print(f'temp size {temp.shape}')
                 cropped_img.append(temp)
 
         cropped_img = [tf.image.resize_with_pad(x, target_height=tg_height,
