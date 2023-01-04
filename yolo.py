@@ -59,8 +59,8 @@ class YoloPred:
         spilited_key = key.split('/')
         key = [x for x in spilited_key if '.jpg' in x][0]
         img_name = 'coco/images/train2017/' + key
-        if self.pred_df[self.pred_df['path'] == img_name].size == 0:
-            return [False, key]
+        # if self.pred_df[self.pred_df['path'] == img_name].size == 0:
+        #     return [False, key]
         dummy_df = self.pred_df[self.pred_df['path'] == img_name].sort_values(by=['conf'], ascending=False)
         # print(dummy_df.shape)
 
@@ -73,7 +73,7 @@ class YoloPred:
 
         tg = dummy_df[['x1', 'y1', 'x2', 'y2']].values.tolist()
 
-        return [True, np.array(tg), dummy_df, key]
+        return np.array(tg), dummy_df, key
 
 
 
